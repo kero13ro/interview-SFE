@@ -6,16 +6,22 @@ const RunningClock = () => {
   const [remainingSeconds, setRemainingSeconds] = useState(0);
   const [status, setStatus] = useState('idle');
 
+  // Optimized: only depend on status, not remainingSeconds
+  // This prevents interval from being recreated every second
   useEffect(() => {
-    if (status !== 'running' || remainingSeconds <= 0) return;
+    if (status !== 'running') return;
 
     const intervalId = setInterval(() => {
-      setRemainingSeconds((prev) => Math.max(0, prev - 1));
+      setRemainingSeconds((prev) => {
+        if (prev <= 0) return 0;
+        return prev - 1;
+      });
     }, 1000);
 
     return () => clearInterval(intervalId);
-  }, [status, remainingSeconds]);
+  }, [status]);
 
+  // Separate effect to handle countdown completion
   useEffect(() => {
     if (status === 'running' && remainingSeconds === 0) {
       setStatus('idle');
