@@ -1,0 +1,6 @@
+{
+  "name": "task-2-is-cycle",
+  "scripts": {
+    "test": "node solution.test.js"
+  }
+}
