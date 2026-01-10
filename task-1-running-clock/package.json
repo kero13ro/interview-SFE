@@ -1,0 +1,13 @@
+{
+  "name": "task-1-running-clock",
+  "scripts": {
+    "start": "parcel index.html"
+  },
+  "dependencies": {
+    "react": "17.0.1",
+    "react-dom": "17.0.1"
+  },
+  "devDependencies": {
+    "parcel": "^2.11.0"
+  }
+}
