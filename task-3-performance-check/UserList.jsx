@@ -5,7 +5,7 @@ import React, { useState, useEffect } from 'react';
  *
  * Improvements over original code:
  * 1. Separated from Counter - won't re-render when count changes
- * 2. Added isMounted flag to prevent memory leaks
+ * 2. Uses AbortController to cancel in-flight requests on unmount
  * 3. Added loading and error states for better UX
  * 4. Proper error handling with .catch()
  */
@@ -15,32 +15,30 @@ const UserList = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    // Flag to prevent setState on unmounted component
-    let isMounted = true;
+    // AbortController for canceling fetch on unmount
+    const abortController = new AbortController();
 
-    fetch('https://api.example.com/users')
+    fetch('https://api.example.com/users', {
+      signal: abortController.signal,
+    })
       .then((res) => {
         if (!res.ok) throw new Error('Failed to fetch users');
         return res.json();
       })
       .then((data) => {
-        // Only update state if component is still mounted
-        if (isMounted) {
-          setUsers(data);
-          setLoading(false);
-        }
+        setUsers(data);
+        setLoading(false);
       })
       .catch((err) => {
-        // Handle errors gracefully
-        if (isMounted) {
-          setError(err.message);
-          setLoading(false);
-        }
+        // Ignore abort errors (expected when component unmounts)
+        if (err.name === 'AbortError') return;
+        setError(err.message);
+        setLoading(false);
       });
 
-    // Cleanup: mark as unmounted to prevent memory leaks
+    // Cleanup: abort the fetch request
     return () => {
-      isMounted = false;
+      abortController.abort();
     };
   }, []);
 

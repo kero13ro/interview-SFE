@@ -30,8 +30,8 @@ import UserList from './UserList';
  *    - User sees meaningful error messages instead of silent failures
  *
  * 3. Memory Leak Prevention
- *    - Added isMounted flag to prevent setState after unmount
- *    - Cleanup function sets isMounted = false on unmount
+ *    - Uses AbortController to cancel in-flight fetch requests on unmount
+ *    - More elegant than isMounted flag - actually cancels the network request
  *
  * 4. Functional State Update
  *    - Changed setCount(count + 1) to setCount((c) => c + 1)
